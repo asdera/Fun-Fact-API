@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 
 // Set up the express app
 const app = express();
-// get all todos
+// get all facts
 app.get('/facts', (req, res) => {
   request('https://en.wikipedia.org/wiki/Main_Page', (error, response, html) => {
       if (!error && response.statusCode == 200) {
@@ -23,7 +23,7 @@ app.get('/facts/:id', (req, res) => {
   getWiki(res, id);
   // return res.status(200).send({
   //   success: 'true',
-  //   message: 'todo retrieved successfully',
+  //   message: 'fact retrieved successfully',
   //   topic: id,
   //   fact: id,
   // });
@@ -60,9 +60,9 @@ async function getWiki(res, text, force=true) {
 
       if (facts.length == 0) {
           if (force) {
-              bot.sendMessage({
-                  to: res,
-                  message: "**No Fun Facts Found D:**"
+              return res.status(404).send({
+                success: 'false',
+                message: 'no facts available',
               });
           }
       } else if (fact.slice(-1) == ":") {
@@ -101,7 +101,7 @@ async function getWiki(res, text, force=true) {
           if (force) {
               return res.status(200).send({
                 success: 'true',
-                message: 'todo retrieved successfully',
+                message: 'fact retrieved successfully',
                 topic: text,
                 fact: fact,
               });
