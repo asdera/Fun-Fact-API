@@ -7,11 +7,15 @@ const cheerio = require('cheerio');
 const app = express();
 // get all todos
 app.get('/facts', (req, res) => {
-  res.status(200).send({
-    success: 'true',
-    message: 'todos retrieved successfully',
-    todos: db
-  })
+  request('https://en.wikipedia.org/wiki/Main_Page', (error, response, html) => {
+      if (!error && response.statusCode == 200) {
+          const $ = cheerio.load(html);
+
+          var special = $('#mp-tfa > p > a').attr('href').substring(6).replace(/_/g, ' ');
+
+          getWiki(res, special);
+      }
+  });
 });
 
 app.get('/facts/:id', (req, res) => {
@@ -29,7 +33,7 @@ app.get('/facts/:id', (req, res) => {
   //   message: 'topic does not exist',
   // });
 });
-const PORT = 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`)
